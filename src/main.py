@@ -1,5 +1,10 @@
+from pipeline import DatasetPipeline
+
 def main():
-    print("Welcome to the Intelligent Dataset Quality Engine!")
+
+    pipeline = DatasetPipeline()
+
+    pipeline.run()
 
 if __name__ == "__main__":
     main()

@@ -1,0 +1,37 @@
+dataset:
+
+  image_extensions:
+
+    - .jpg
+
+    - .jpeg
+
+    - .png
+
+    - .bmp
+
+    - .tif
+
+    - .tiff
+
+quality:
+
+  blur_threshold: 100
+
+  dark_threshold: 40
+
+  bright_threshold: 220
+
+  min_width: 640
+
+  min_height: 480
+
+duplicates:
+
+  hash_size: 8
+
+reports:
+
+  save_csv: true
+
+  output_folder: reports
