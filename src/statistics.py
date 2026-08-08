@@ -1,3 +1,6 @@
+import matplotlib
+matplotlib.use('Agg')  # Forces Matplotlib to generate image files silently without standard GUI tools
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
