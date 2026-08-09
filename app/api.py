@@ -3,6 +3,7 @@ import shutil
 import zipfile
 from pathlib import Path
 from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks
+from fastapi.responses import FileResponse
 
 from app.job_manager import JobManager
 from src.pipeline import DatasetPipeline
@@ -177,3 +178,58 @@ def process_dataset(
         "status": "queued",
         "message": "Dataset processing started"
     }
+
+
+# --- ZIP CREATION UTILITY FUNCTION ---
+def create_output_zip(job_id: str):
+    output_path = OUTPUT_DIR / job_id
+
+    if not output_path.exists():
+        raise FileNotFoundError("Output directory not found")
+
+    # This creates a base name path string target for make_archive
+    zip_target_base = OUTPUT_DIR / f"{job_id}_cleaned"
+
+    # Packages clean/, rejected/, and reports/ straight into the root of the ZIP
+    archive_path = shutil.make_archive(
+        base_name=str(zip_target_base),
+        format="zip",
+        root_dir=output_path
+    )
+
+    return Path(archive_path)
+
+
+# --- DOWNLOAD ENDPOINT ROUTER ---
+@app.get("/download/{job_id}")
+def download_dataset(job_id: str):
+    job = job_manager.get_job(job_id)
+
+    # Security Check 1: Check if the Job ID exists at all
+    if job is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Job not found"
+        )
+
+    # Security Check 2: Protect against downloading incomplete data chunks
+    if job["status"] != "completed":
+        raise HTTPException(
+            status_code=400,
+            detail="Dataset processing is not completed"
+        )
+
+    try:
+        zip_path = create_output_zip(job_id)
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=404,
+            detail="Processed dataset files not found on disk"
+        )
+
+    # Stream the compressed file package directly to the browser
+    return FileResponse(
+        path=zip_path,
+        media_type="application/zip",
+        filename="cleaned_dataset.zip"
+    )

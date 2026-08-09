@@ -13,6 +13,7 @@ from src.logger import logger
 from pathlib import Path
 from tqdm import tqdm
 
+
 class DatasetPipeline:
 
     def __init__(self, dataset_path, output_root=None):

@@ -1,5 +1,13 @@
-venv/
+# Ignore local environment files
+.venv/
 __pycache__/
 *.pyc
-reports/*.csv
-reports/*.png
+
+# Ignore local datasets and testing workspaces
+uploads/
+outputs/
+dataset/
+dataset2/
+
+# Ignore generated reports folder if you only want code tracked
+reports/
